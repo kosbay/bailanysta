@@ -1,3 +1,6 @@
+# Demo available here:
+https://bailanysta-one.vercel.app/
+
 # Bailanysta - Social Media Platform
 
 Bailanysta is a modern social media platform where users can connect, share thoughts, and discover content from their community. Built with cutting-edge web technologies, it provides a seamless experience for creating posts, engaging with content, and building connections.
