@@ -1,0 +1,112 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  username    String   @unique
+  displayName String
+  bio         String?
+  avatar      String?
+  password    String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  posts       Post[]
+  likes       Like[]
+  comments    Comment[]
+  following   Follow[] @relation("UserFollowing")
+  followers   Follow[] @relation("UserFollowers")
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Post {
+  id          String   @id @default(cuid())
+  content     String
+  hashtags    String? // JSON string of hashtags array
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  author      User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId    String
+  likes       Like[]
+  comments    Comment[]
+
+  @@map("posts")
+}
+
+model Like {
+  id     String @id @default(cuid())
+  
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, postId])
+  @@map("likes")
+}
+
+model Comment {
+  id      String @id @default(cuid())
+  content String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relations
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId  String
+  post    Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId  String
+
+  @@map("comments")
+}
+
+model Follow {
+  id          String @id @default(cuid())
+  
+  // Relations
+  follower    User   @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId  String
+  following   User   @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  type      NotificationType
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    String
+
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+}
