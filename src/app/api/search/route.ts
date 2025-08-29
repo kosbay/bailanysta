@@ -25,13 +25,11 @@ export async function GET(request: NextRequest): Promise<NextResponse<ApiRespons
           {
             content: {
               contains: searchTerm,
-              mode: 'insensitive',
             }
           },
           {
             hashtags: {
               contains: searchTerm,
-              mode: 'insensitive',
             }
           }
         ]
