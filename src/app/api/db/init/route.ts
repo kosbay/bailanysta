@@ -21,13 +21,16 @@ export async function POST() {
       timestamp: new Date().toISOString()
     });
     
-  } catch (error: any) {
+  } catch (error) {
     console.error('Database initialization error:', error);
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred';
+    const errorCode = error && typeof error === 'object' && 'code' in error ? error.code : undefined;
     
     return NextResponse.json({
       success: false,
-      error: error.message,
-      code: error.code,
+      error: errorMessage,
+      code: errorCode,
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }
